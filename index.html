@@ -18,7 +18,7 @@
             color: var(--text);
             margin: 0;
             padding: 0;
-            padding-bottom: 80px;
+            padding-bottom: 90px;
         }
         header {
             background: linear-gradient(135deg, var(--primary), #1B5E20);
@@ -56,14 +56,11 @@
             border-radius: 15px;
             overflow: hidden;
             box-shadow: 0 6px 15px rgba(0,0,0,0.08);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.3s ease;
             display: flex;
             flex-direction: column;
         }
-        .produk-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.12);
-        }
+        .produk-card:hover { transform: translateY(-5px); }
         .produk-card img {
             width: 100%;
             height: 220px;
@@ -89,39 +86,45 @@
             font-size: 1em;
             font-weight: bold;
             cursor: pointer;
-            transition: background-color 0.2s;
             width: 100%;
+            transition: background-color 0.2s;
         }
         .btn-tambah:hover { background-color: #1B5E20; }
-        .btn-tambah:active { transform: scale(0.98); }
 
-        .cart-float {
+        /* Floating Buttons */
+        .float-menu {
             position: fixed;
             bottom: 25px;
             right: 25px;
+            display: flex;
+            gap: 12px;
+            z-index: 1000;
+        }
+        .float-btn {
             background-color: var(--secondary);
             color: #111;
-            padding: 15px 25px;
+            padding: 14px 20px;
             border-radius: 30px;
             font-weight: bold;
-            font-size: 1.1em;
+            font-size: 1em;
             box-shadow: 0 6px 20px rgba(0,0,0,0.25);
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 12px;
-            z-index: 1000;
+            gap: 8px;
+            border: none;
             transition: transform 0.2s;
         }
-        .cart-float:hover { transform: scale(1.05); }
+        .float-btn:hover { transform: scale(1.05); }
         .badge {
             background-color: #D32F2F;
             color: white;
-            padding: 4px 10px;
+            padding: 3px 8px;
             border-radius: 20px;
-            font-size: 0.9em;
+            font-size: 0.85em;
         }
 
+        /* Modal & Admin Panel */
         .modal {
             display: none;
             position: fixed;
@@ -135,7 +138,7 @@
         .modal-content {
             background-color: white;
             width: 90%;
-            max-width: 450px;
+            max-width: 480px;
             border-radius: 15px;
             padding: 25px;
             max-height: 85vh;
@@ -150,27 +153,19 @@
             padding-bottom: 15px;
             margin-bottom: 20px;
         }
-        .modal-header h2 { margin: 0; font-size: 1.5em; color: var(--primary); }
+        .modal-header h2 { margin: 0; font-size: 1.4em; color: var(--primary); }
         .close-btn { font-size: 1.8em; cursor: pointer; color: #888; line-height: 1; }
-        .close-btn:hover { color: #333; }
         
-        .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed #DDD; }
-        .cart-item-info h4 { margin: 0 0 5px; font-size: 1.1em; }
-        .cart-item-info p { margin: 0; color: #666; font-size: 0.9em; }
-        .btn-checkout {
-            background-color: #25D366;
-            color: white;
-            border: none;
-            padding: 16px;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 1.2em;
-            width: 100%;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: background-color 0.2s;
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.9em; }
+        .form-group input, .form-group textarea {
+            width: 100%; padding: 12px; border: 1px solid #CCC; border-radius: 8px; font-size: 1em; box-sizing: border-box;
         }
-        .btn-checkout:hover { background-color: #128C7E; }
+        .btn-submit {
+            background-color: var(--primary); color: white; border: none; padding: 14px; width: 100%;
+            border-radius: 8px; font-weight: bold; font-size: 1.1em; cursor: pointer; margin-top: 10px;
+        }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed #DDD; }
     </style>
 </head>
 <body>
@@ -184,36 +179,76 @@
         <div id="loading">Memuat katalog produk... ⏳</div>
     </div>
 
-    <div class="cart-float" onclick="bukaKeranjang()">
-        🛒 Keranjang <span class="badge" id="cart-count">0</span>
+    <!-- Tombol Mengambang (Keranjang & Admin) -->
+    <div class="float-menu">
+        <button class="float-btn" onclick="bukaAdmin()" style="background-color: #37474F; color: white;">⚙️ Admin</button>
+        <button class="float-btn" onclick="bukaKeranjang()">🛒 Keranjang <span class="badge" id="cart-count">0</span></button>
     </div>
 
+    <!-- Modal Keranjang -->
     <div class="modal" id="cart-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Keranjang Anda</h2>
+                <h2>Keranjang Belanja</h2>
                 <span class="close-btn" onclick="tutupKeranjang()">&times;</span>
             </div>
             <div id="cart-items"></div>
             <h3 style="text-align: right; margin-top: 20px; border-top: 2px solid #eee; padding-top: 15px;">
                 Total: <span id="cart-total" style="color: #D32F2F;">Rp 0</span>
             </h3>
-            <!-- Ganti nomor WhatsApp di bawah ini (awali 62 tanpa 0) -->
-            <button class="btn-checkout" onclick="checkoutWA('628123456789')">Pesan via WhatsApp</button>
+            <!-- Ganti dengan nomor WhatsApp Anda -->
+            <button class="btn-submit" style="background-color: #25D366;" onclick="checkoutWA('628123456789')">Pesan via WhatsApp</button>
+        </div>
+    </div>
+
+    <!-- Modal Admin Panel (Tambah Produk Langsung) -->
+    <div class="modal" id="admin-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Dashboard Tambah Produk</h2>
+                <span class="close-btn" onclick="tutupAdmin()">&times;</span>
+            </div>
+            <div id="admin-form-area">
+                <p style="font-size: 0.9em; color: #666; margin-bottom: 15px;">Form ini langsung terhubung untuk memperbarui katalog desa secara online.</p>
+                
+                <div class="form-group">
+                    <label>Nama Produk</label>
+                    <input type="text" id="p-nama" placeholder="Contoh: Gula Aren Asli">
+                </div>
+                <div class="form-group">
+                    <label>Harga (angka saja)</label>
+                    <input type="number" id="p-harga" placeholder="Contoh: 25000">
+                </div>
+                <div class="form-group">
+                    <label>Link Foto Produk (URL)</label>
+                    <input type="text" id="p-foto" placeholder="https://... (link gambar internet)">
+                </div>
+                <div class="form-group">
+                    <label>Deskripsi Singkat</label>
+                    <textarea id="p-desc" rows="3" placeholder="Kualitas murni dari pohon nira..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>GitHub Personal Access Token (PAT)</label>
+                    <input type="password" id="gh-token" placeholder="Masukkan Token GitHub Anda">
+                    <small style="color: #888; font-size: 0.8em;">Dibutuhkan sekali untuk izin simpan otomatis ke GitHub.</small>
+                </div>
+
+                <button class="btn-submit" onclick="tambahProdukBaru()">Simpan & Publikasikan</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // Mengambil data secara terpisah dari file data.json
+        let produkList = [];
+
         async function muatKatalog() {
             try {
-                const response = await fetch('data.json');
-                if (!response.ok) throw new Error("Gagal memuat data produk");
-                const produkList = await response.json();
-                tampilkanKatalog(produkList);
+                const response = await fetch('data.json?t=' + new Date().getTime());
+                if (!response.ok) throw new Error("Gagal memuat data");
+                produkList = await response.json();
+                tampilkanKatalog();
             } catch (error) {
-                document.getElementById('loading').innerHTML = "Katalog siap online. Unggah file index.html & data.json ke GitHub.";
-                console.error("Error:", error);
+                document.getElementById('loading').innerHTML = "Gagal memuat data.json. Pastikan file sudah diunggah ke GitHub.";
             }
         }
 
@@ -221,14 +256,19 @@
             return "Rp " + Number(angka).toLocaleString('id-ID');
         }
 
-        function tampilkanKatalog(produkList) {
+        function tampilkanKatalog() {
             const container = document.getElementById('katalog-container');
             container.innerHTML = ""; 
+
+            if(produkList.length === 0) {
+                container.innerHTML = "<div id='loading'>Belum ada produk.</div>";
+                return;
+            }
 
             produkList.forEach(produk => {
                 const card = `
                     <div class="produk-card">
-                        <img src="${produk.foto}" alt="${produk.nama}">
+                        <img src="${produk.foto || 'https://via.placeholder.com/500x300?text=Foto'}" alt="${produk.nama}">
                         <div class="produk-info">
                             <h3>${produk.nama}</h3>
                             <p>${produk.deskripsi}</p>
@@ -243,63 +283,113 @@
 
         muatKatalog();
 
-        let keranjang = [];
+        // --- SISTEM ADMIN OTOMATIS KE GITHUB ---
+        async function tambahProdukBaru() {
+            let nama = document.getElementById('p-nama').value;
+            let harga = document.getElementById('p-harga').value;
+            let foto = document.getElementById('p-foto').value;
+            let desc = document.getElementById('p-desc').value;
+            let token = document.getElementById('gh-token').value;
 
+            if(!nama || !harga || !token) {
+                alert("Nama, Harga, dan GitHub Token wajib diisi!");
+                return;
+            }
+
+            let produkBaru = {
+                id: produkList.length + 1,
+                nama: nama,
+                harga: Number(harga),
+                deskripsi: desc,
+                foto: foto || "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=500"
+            };
+
+            produkList.push(produkBaru);
+
+            // Konfigurasi Repositori GitHub Anda
+            let owner = "Panca989898";
+            let repo = "Panca-web";
+            let path = "data.json";
+
+            alert("Sedang mengirim data ke GitHub, mohon tunggu sebentar...");
+
+            try {
+                // 1. Ambil SHA file data.json yang ada di GitHub saat ini
+                let getRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+                    headers: { "Authorization": `token ${token}` }
+                });
+                let fileData = await getRes.json();
+                let sha = fileData.sha;
+
+                // 2. Ubah data array ke teks base64
+                let updatedContent = btoa(unescape(encodeURIComponent(JSON.stringify(produkList, null, 2))));
+
+                // 3. Kirim pembaruan ke GitHub
+                let putRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+                    method: "PUT",
+                    headers: {
+                        "Authorization": `token ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        message: "Tambah produk baru via Admin Panel Web",
+                        content: updatedContent,
+                        sha: sha
+                    })
+                });
+
+                if(putRes.ok) {
+                    alert("Berhasil! Produk baru sudah otomatis tersimpan di GitHub dan tayang di website.");
+                    tutupAdmin();
+                    muatKatalog();
+                } else {
+                    alert("Gagal menyimpan ke GitHub. Periksa kembali Token GitHub Anda.");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Terjadi kesalahan koneksi.");
+            }
+        }
+
+        // --- KERANJANG BELANJA ---
+        let keranjang = [];
         function tambahKeKeranjang(nama, harga) {
             let item = keranjang.find(i => i.nama === nama);
-            if (item) {
-                item.qty += 1;
-            } else {
-                keranjang.push({ nama: nama, harga: harga, qty: 1 });
-            }
+            if (item) item.qty += 1;
+            else keranjang.push({ nama: nama, harga: harga, qty: 1 });
             updateUI();
-            alert(nama + " ditambahkan ke keranjang!");
+            alert(nama + " ditambahkan!");
         }
 
         function updateUI() {
-            let totalItem = 0;
-            let totalHarga = 0;
-            let cartHtml = "";
-
+            let totalItem = 0, totalHarga = 0, cartHtml = "";
             keranjang.forEach((item) => {
                 totalItem += item.qty;
                 let subtotal = item.harga * item.qty;
                 totalHarga += subtotal;
-                
-                cartHtml += `
-                <div class="cart-item">
-                    <div class="cart-item-info">
-                        <h4>${item.nama}</h4>
-                        <p>${formatRupiah(item.harga)} x ${item.qty}</p>
-                    </div>
-                    <strong>${formatRupiah(subtotal)}</strong>
-                </div>`;
+                cartHtml += `<div class="cart-item"><div><h4>${item.nama}</h4><p>${formatRupiah(item.harga)} x ${item.qty}</p></div><strong>${formatRupiah(subtotal)}</strong></div>`;
             });
-
             document.getElementById('cart-count').innerText = totalItem;
-            document.getElementById('cart-items').innerHTML = cartHtml || "<p style='text-align:center; color:#888;'>Keranjang masih kosong.</p>";
+            document.getElementById('cart-items').innerHTML = cartHtml || "<p style='text-align:center; color:#888;'>Keranjang kosong.</p>";
             document.getElementById('cart-total').innerText = formatRupiah(totalHarga);
         }
 
         function bukaKeranjang() { document.getElementById('cart-modal').style.display = 'flex'; }
         function tutupKeranjang() { document.getElementById('cart-modal').style.display = 'none'; }
+        function bukaAdmin() { document.getElementById('admin-modal').style.display = 'flex'; }
+        function tutupAdmin() { document.getElementById('admin-modal').style.display = 'none'; }
 
         function checkoutWA(nomorWA) {
             if (keranjang.length === 0) { alert("Keranjang kosong!"); return; }
-
             let teksWA = "*PESANAN PASAR UMKM TRAJUMAS*\n----------------------------------------\n\n";
             let total = 0;
-
             keranjang.forEach((item, index) => {
                 let subtotal = item.harga * item.qty;
                 teksWA += `${index + 1}. *${item.nama}*\n   ${item.qty} x ${formatRupiah(item.harga)} = ${formatRupiah(subtotal)}\n\n`;
                 total += subtotal;
             });
-
-            teksWA += `----------------------------------------\n*TOTAL : ${formatRupiah(total)}*\n\nMohon info ongkos kirim dan metode pembayarannya. Terima kasih.`;
-
-            let url = `https://wa.me/${nomorWA}?text=${encodeURIComponent(teksWA)}`;
-            window.open(url, '_blank');
+            teksWA += `----------------------------------------\n*TOTAL : ${formatRupiah(total)}*\n\nMohon info ongkos kirim. Terima kasih.`;
+            window.open(`https://wa.me/${nomorWA}?text=${encodeURIComponent(teksWA)}`, '_blank');
         }
     </script>
 </body>
