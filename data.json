@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "nama": "Kapulaga Kering Premium",
+    "harga": 85000,
+    "deskripsi": "Kualitas super, aroma kuat untuk rempah dan industri herbal.",
+    "foto": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+  },
+  {
+    "id": 2,
+    "nama": "Kopi Robusta Pegunungan",
+    "harga": 35000,
+    "deskripsi": "Biji kopi pilihan dari dataran tinggi Pekalongan (250g).",
+    "foto": "https://images.unsplash.com/photo-1559525839-b184a4d698c7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+  },
+  {
+    "id": 3,
+    "nama": "Sapu Rumput Awis",
+    "harga": 20000,
+    "deskripsi": "Kerajinan tangan otentik khas warga yang dirakit kuat dan awet.",
+    "foto": "https://images.unsplash.com/photo-1615598122285-d6c5cc8b6b1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+  }
+]
